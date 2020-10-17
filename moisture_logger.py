@@ -19,8 +19,10 @@ class Moisture_logger():
         self._ser.port=port
         self._ser.baudrate=9600
         self._ser.open()
-        while(True):
-            logger.info(self._ser.readline().strip())
+        
+    def get_sample(self):
+        """Get sample"""
+        logger.info(self._ser.readline().strip())
 
 def run():
     """Run"""
