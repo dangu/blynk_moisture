@@ -77,7 +77,7 @@ class BlynkHandler:
 
 def run():
     """Run"""
-    formatter = logging.Formatter(fmt='%(asctime)s %(levelname)-8s %(message)s',
+    formatter = logging.Formatter(fmt='%(asctime)s %(name)-9s %(levelname)-8s %(message)s',
                                   datefmt='%Y-%m-%d %H:%M:%S')
     handler = logging.FileHandler('log.txt', mode='a')
     handler.setFormatter(formatter)

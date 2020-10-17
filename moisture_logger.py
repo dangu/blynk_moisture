@@ -3,7 +3,7 @@ import logging
 import sys
 import time
 
-logger = logging.getLogger()
+logger = logging.getLogger("rh_logger")
 
 
 
@@ -13,7 +13,6 @@ class Moisture_logger():
         """Init"""
         self._ser=serial.Serial()
         self.latestSample = {}
-        
 
     def get_sample(self):
         """Get the latest sample"""
