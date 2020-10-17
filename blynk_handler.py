@@ -1,4 +1,5 @@
 import blynklib
+import blynktimer
 import moisture_logger
 import logging
 import sys
@@ -10,27 +11,40 @@ logger = logging.getLogger()
 BLYNK_AUTH = 'riJfOIo0uTbyVPzvm8WgeV8KwpiESfAn' #insert your Auth Token here
 # base lib init
 blynk = blynklib.Blynk(BLYNK_AUTH)
- 
 
-@blynk.handle_event('read V3')
-def read_virtual_pin_handler3(pin):
-    logger.debug("read pin %s" % (pin))
-    sample=ml.get_sample()
-    if sample != {}:
-        #self.blynk.virtual_write(pin, sample['temp'])
-    # send value to Virtual Pin and store it in Blynk Cloud 
-        blynk.virtual_write(pin, sample['temp'])
+timer = blynktimer.Timer()
 
-@blynk.handle_event('read V4')
-def read_virtual_pin_handler4(pin):
-    logger.debug("read pin %s" % (pin))
-    sample=ml.get_sample()
-    if sample != {}:
-        #self.blynk.virtual_write(pin, sample['temp'])
-    # send value to Virtual Pin and store it in Blynk Cloud 
-        blynk.virtual_write(pin, sample['humidity'])
-    
-
+# 
+# @blynk.handle_event('read V3')
+# def read_virtual_pin_handler3(pin):
+#     logger.debug("read pin %s" % (pin))
+#     sample=ml.get_sample()
+#     if sample != {}:
+#         #self.blynk.virtual_write(pin, sample['temp'])
+#     # send value to Virtual Pin and store it in Blynk Cloud 
+#         blynk.virtual_write(pin, sample['temp'])
+# 
+# @blynk.handle_event('read V4')
+# def read_virtual_pin_handler4(pin):
+#     logger.debug("read pin %s" % (pin))
+#     sample=ml.get_sample()
+#     if sample != {}:
+#         #self.blynk.virtual_write(pin, sample['temp'])
+#     # send value to Virtual Pin and store it in Blynk Cloud 
+#         blynk.virtual_write(pin, sample['humidity'])
+#     
+# Code below: register two timers for different pins with different intervals
+# run_once flag allows to run timers once or periodically
+@timer.register(vpin_num=3, interval=5, run_once=False)
+@timer.register(vpin_num=4, interval=5, run_once=False)
+def write_to_virtual_pin(vpin_num=1):
+    if vpin_num in [3,4]:
+        sample=ml.get_sample()
+        if sample != {}:
+            if vpin_num == 3:
+                blynk.virtual_write(vpin_num, sample['temp'])
+            elif vpin_num == 4:
+                blynk.virtual_write(vpin_num, sample['humidity'])
 
 # class BlynkPublisher:
 # 
@@ -56,24 +70,6 @@ def read_virtual_pin_handler4(pin):
 #     BlynkPublisher().read_event_handler(pin)
      
 
-#     
-class BlynkHandler:
-    """Blynk handler class"""
-    def __init__(self):
-        """Init"""
-        self.data1=11
-           
-    # register handler for Virtual Pin V22 reading by Blynk App.
-    # when a widget in Blynk App asks Virtual Pin data from server within given configurable interval (1,2,5,10 sec etc) 
-    # server automatically sends notification about read virtual pin event to hardware
-    # this notification captured by current handler 
-    @blynk.handle_event('read V22')
-    def read_virtual_pin_handler(self,pin):
-                   
-        # send value to Virtual Pin and store it in Blynk Cloud 
-        blynk.virtual_write(pin, self.data1)
-        self.data1 += 1
-
 
 def run():
     """Run"""
@@ -92,10 +88,10 @@ def run():
     ml=moisture_logger.Moisture_logger()
     logger.info("Starting...")
     ml.start(port="/dev/ttyUSB0")
-    
-            
+       
     while True:
         blynk.run()
+        timer.run()
         ml.read_from_sensor()
     
 if __name__ == "__main__":

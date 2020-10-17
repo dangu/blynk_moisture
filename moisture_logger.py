@@ -32,7 +32,7 @@ class Moisture_logger():
         self._sensorData += readFromSerialPort
         if self._sensorData[-2:] == "\r\n":
             elements=self._sensorData.split()
-            if len(elements)>=3:
+            if len(elements)>=4:
                 #This should be correct data
                 temp,humidity = float(elements[-3]), float(elements[-1])
                         
