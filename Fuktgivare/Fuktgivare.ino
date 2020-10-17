@@ -14,6 +14,7 @@
 // just contact techsupport@e-radionica.com
 //==============================================================================
 
+// Library: https://github.com/e-radionicacom/SHT21-Arduino-Library
 #include <SHT21.h>  // include SHT21 library
 
 SHT21 sht; 
