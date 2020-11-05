@@ -3,6 +3,7 @@ import blynktimer
 import moisture_logger
 import logging
 import sys
+import time
 
 logger = logging.getLogger()
 
@@ -13,6 +14,8 @@ BLYNK_AUTH = 'riJfOIo0uTbyVPzvm8WgeV8KwpiESfAn' #insert your Auth Token here
 blynk = blynklib.Blynk(BLYNK_AUTH)
 
 timer = blynktimer.Timer()
+
+t0 = time.time()
 
 # 
 # @blynk.handle_event('read V3')
@@ -46,7 +49,17 @@ def write_to_virtual_pin(vpin_num=1):
             elif vpin_num == 4:
                 blynk.virtual_write(vpin_num, sample['humidity'])
 
-# class BlynkPublisher:
+@timer.register(vpin_num=5, interval=10, run_once=False)
+@timer.register(vpin_num=6, interval=10, run_once=False)
+def write_uptime(vpin_num=1):
+    """Write the uptime to a virtual pin"""
+    last_restart = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(t0))
+    uptime = time.strftime("%H:%M:%S",time.localtime(time.time()-t0))
+    if vpin_num==5:
+        blynk.virtual_write(vpin_num, last_restart)
+    elif vpin_num==6:
+        blynk.virtual_write(vpin_num, uptime)
+    # class BlynkPublisher:
 # 
 #     def write_event_handler(self, pin, val):
 #         logger.debug("write to pin %s value %s" % (pin,val))
